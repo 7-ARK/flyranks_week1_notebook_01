@@ -1,0 +1,105 @@
+"""Build the public static research page from verified study receipts."""
+from pathlib import Path
+import json,html,shutil
+import pandas as pd
+
+ROOT=Path(__file__).resolve().parents[1]
+r=json.loads((ROOT/'work/outputs/capstone_metrics.json').read_text(encoding='utf8'))
+DOCS=ROOT/'docs'; assets=DOCS/'paper-assets'; assets.mkdir(exist_ok=True)
+for name in ('test_error','feature_importance','error_by_position'):
+    shutil.copy2(ROOT/f'work/figures/{name}.png',assets/f'{name}.png')
+def table(records,rename=None):
+    frame=pd.DataFrame(records)
+    if rename: frame=frame.rename(columns=rename)
+    return '<div class="table-wrap">'+frame.to_html(index=False,border=0,float_format=lambda x:f'{x:.5f}',escape=True)+'</div>'
+def figure(name,caption):
+    return f'<figure><img src="paper-assets/{name}.png" alt="{html.escape(caption)}"><figcaption>{caption}</figcaption></figure>'
+test={x['method']:x for x in r['test']}
+improvement=100*(test['Persistence']['mae_pp']-test['Ridge']['mae_pp'])/test['Persistence']['mae_pp']
+repo='https://github.com/7-ARK/flyranks_week1_notebook_01'
+rows=''.join(f'<tr><td>{x["rank"]}</td><td><code>{x["content_id"]}</code></td><td>{html.escape(x["action"])}<small>{html.escape(x["evidence"])}</small></td><td>{html.escape(x["caveat"])}</td></tr>' for x in r['top10'])
+page=f'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prioritizing CTR Review with a Small Search Model — Ahmed Raza</title>
+<meta name="description" content="A reproducible FlyRank warehouse study comparing five-feature CTR models with transparent baselines on held-out clients.">
+<style>
+:root{{--ink:#203237;--muted:#56686b;--green:#336654;--line:#d8dfda;--paper:#fbfaf6}}
+*{{box-sizing:border-box}}body{{margin:0;background:var(--paper);color:var(--ink);font:17px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}}
+a{{color:var(--green);text-underline-offset:4px}}a:focus-visible{{outline:3px solid #c88a30;outline-offset:4px}}
+header,main,footer{{max-width:1080px;margin:auto;padding:0 32px}}header{{padding-top:66px;padding-bottom:34px;border-bottom:1px solid var(--line)}}
+.eyebrow{{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--green);font-weight:750}}
+h1,h2,h3{{font-family:Georgia,'Times New Roman',serif;font-weight:500;line-height:1.17}}h1{{font-size:clamp(36px,5vw,60px);max-width:900px;margin:17px 0 22px;letter-spacing:-.035em}}h2{{font-size:32px;margin:0 0 22px}}h3{{font-size:23px}}
+.dek{{font-size:20px;max-width:760px;color:var(--muted)}}.meta{{font-size:14px;color:var(--muted)}}
+nav{{display:flex;flex-wrap:wrap;gap:10px 22px;padding:20px 0;font-size:14px}}
+section{{padding:42px 0;border-bottom:1px solid var(--line)}}p{{max-width:880px;margin:0 0 20px}}
+.abstract{{background:#edf1eb;padding:28px 32px;border-left:4px solid var(--green)}}
+.numbers{{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:34px 0 4px}}
+.numbers strong{{display:block;font-size:32px;font-weight:650;line-height:1.25}}.numbers span{{font-size:13px;color:var(--muted)}}
+table{{border-collapse:collapse;width:100%;font-size:14px;line-height:1.55;text-align:left}}th{{background:#edf1eb;font-weight:650}}th,td{{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}}
+.table-wrap{{overflow-x:auto;margin:24px 0;max-width:100%}}small{{display:block;margin-top:8px;color:var(--muted)}}
+figure{{margin:32px 0}}figure img{{width:100%;max-width:840px;height:auto;display:block;background:white;border:1px solid var(--line)}}figcaption{{font-size:14px;color:var(--muted);margin-top:12px;max-width:840px}}
+code{{font:13px/1.6 ui-monospace,Consolas,monospace;overflow-wrap:anywhere}}pre{{padding:20px;background:#edf1eb;overflow-x:auto}}
+.note{{border-left:3px solid #c68a36;padding:14px 22px;background:#f4efe3}}ul{{padding-left:24px;max-width:880px}}li{{margin-bottom:10px}}footer{{padding-top:28px;padding-bottom:48px;color:var(--muted);font-size:13px}}
+@media(max-width:650px){{body{{font-size:16px}}header,main,footer{{padding-left:20px;padding-right:20px}}header{{padding-top:36px}}section{{padding:32px 0}}.abstract{{padding:22px}}.numbers{{grid-template-columns:1fr;gap:18px}}.numbers strong{{font-size:28px}}th,td{{padding:10px}}h2{{font-size:28px}}}}
+@media print{{nav{{display:none}}body{{background:white;font-size:11pt}}header{{padding-top:0}}section{{break-inside:avoid}}figure{{break-inside:avoid}}a{{color:inherit}}}}
+</style></head><body>
+<header><div class="eyebrow">Applied search intelligence · Research paper</div>
+<h1>Prioritizing CTR review with a small search model</h1>
+<p class="dek">A five-feature study of later click-through rate, tested across unseen clients in the FlyRank warehouse.</p>
+<p class="meta">Ahmed Raza · Machine Learning track · September 2026 · Dataset release v20260703</p>
+<nav aria-label="Paper sections"><a href="#abstract">Abstract</a><a href="#data">Data</a><a href="#method">Method</a><a href="#results">Results</a><a href="#limits">Limitations</a><a href="#recommendations">Recommendations</a><a href="#reproduce">Reproduce</a></nav></header>
+<main>
+<section id="abstract"><h2>Abstract</h2><div class="abstract">
+<p>This study asks whether a small model improves prediction of later click-through rate while supporting a transparent queue of pages for human review.
+It uses 9,841,378 daily records from the March 2026 FlyRank warehouse partition, with March 1–15 features and March 16–31 observed outcomes.
+Five past-only features feed fixed Ridge and gradient-boosting candidates, compared with persistence and a position-band reference on disjoint client groups.
+Ridge, selected on validation clients, reduces held-out-client mean absolute error from 0.1675 to 0.1410 CTR percentage points, while the top-queue proxy precision ties the simpler baseline.
+The results support cautious review prioritization and improved CTR estimation within this slice, not a claim that edits cause additional clicks.</p></div>
+<div class="numbers"><div><strong>9.84 million</strong><span>daily records in the March partition</span></div><div><strong>{improvement:.2f}%</strong><span>lower test MAE than persistence</span></div><div><strong>6 clients</strong><span>held out for the final test</span></div></div></section>
+<section id="problem"><div class="eyebrow">01 · Introduction</div><h2>A review queue is a resource decision</h2>
+<p>A content specialist has time to inspect a few pages, not every page receiving search impressions. A low click-through rate may reflect a weak snippet, but it may also reflect search intent, device mix or answers already shown on a results page. A score should identify a question worth investigating, not prescribe an edit.</p>
+<p>This study separates two tasks: estimating later observed CTR, and ranking current review opportunities with a readable rule. False positives waste reviewer time and can encourage unnecessary changes; false negatives leave useful opportunities unexamined.</p></section>
+<section id="data"><div class="eyebrow">02 · Data</div><h2>A documented slice, with explicit exclusions</h2>
+<p>The source is the <a href="https://huggingface.co/datasets/FlyRank/internship-warehouse">FlyRank warehouse release v20260703</a>, specifically <code>fact_content_daily_performance/month=2026-03/data_0.parquet</code>. A raw row is one date × pseudonymized client × content item. The partition contains 9,841,378 rows, 55 clients and 331,437 content items, spanning March 1–31, 2026. The study does not scan or claim coverage of all 78.8 million daily records.</p>
+<p>Three executed checks verify the grain, count/date span and availability. No duplicate daily keys or missing keys were found. Search data is available on 3,611,061 rows, GA4 on 413,966, and both on 364,347. All search aggregation filters <code>gsc_data_available IS TRUE</code>; 163,189 impression-positive, search-available rows lack a positive position and are excluded from the position numerator and denominator.</p>
+<p>Feature eligibility requires all 15 first-half dates available, at least 500 first-half impressions and a valid mean position of 1–20. This produces 28,862 pages. Requiring complete second-half availability and 500+ outcome impressions leaves 25,772 pages for evaluation; the 3,090 exclusions do not disappear from the operational queue merely because their later outcome is unmeasurable. No GA4, query-table or product-flag features are used.</p></section>
+<section id="method"><div class="eyebrow">03 · Methodology</div><h2>Past-only features. Separate clients. Fixed candidates.</h2>
+<p>March 1–15 supplies the inputs; March 16–31 supplies the observed target, <code>100 × clicks / impressions</code>. The cutoff is retrospective and assumes the first-half reports have arrived; the study does not simulate live reporting latency. No recreated rule flag is a training target.</p>
+<div class="table-wrap"><table><thead><tr><th>Input</th><th>First-half calculation</th></tr></thead><tbody>
+<tr><td>Past CTR</td><td>Total clicks / impressions × 100</td></tr><tr><td>Impression volume</td><td>log(1 + total impressions)</td></tr><tr><td>Mean position</td><td>Impression-weighted valid daily average position</td></tr><tr><td>Impression variation</td><td>Daily standard deviation / daily mean</td></tr><tr><td>Zero-click fraction</td><td>Impression-active days with no clicks / impression-active days</td></tr></tbody></table></div>
+<p>Client assignment is deterministic: SHA-256 of <code>ctr-v1:</code> plus the client pseudonym, first eight hex digits modulo five. Folds 2–4 train, fold 1 validates and fold 0 tests. IDs are only grouping keys, never inputs. A client cannot cross partitions.</p>
+{table(r['split'],{'partition':'Partition','pages':'Pages','clients':'Clients'})}
+<p>Persistence predicts that later CTR equals earlier CTR. The position reference predicts the training-client median within bands 1–3, &gt;3–10 and &gt;10–20. Fixed learned candidates are standardized Ridge (alpha=1) and histogram gradient boosting (100 iterations, 15 leaves, 40 minimum samples per leaf, L2=1, early stopping off, seed 42). There is no hyperparameter search. Lowest validation page MAE selects the method, allowing a baseline to win.</p>
+<p>ML-04 deliberately adds the later CTR as an input and obtains an invalid near-zero error, then deletes that column and restores the honest result. Test clients are not used in that demonstration. The final study reports identical-row comparisons, an equal-client macro error and a 2,000-draw paired client-bootstrap interval.</p></section>
+<section id="results"><div class="eyebrow">04 · Results</div><h2>Better CTR estimates; no demonstrated ranking gain</h2>
+<h3>Validation selected Ridge</h3>{table(r['validation'],{'method':'Method','pages':'Pages','clients':'Clients','mae_pp':'MAE (pp)','impression_weighted_mae_pp':'Impression-weighted MAE (pp)','client_macro_mae_pp':'Client-macro MAE (pp)'})}
+<h3>Final test on six unseen clients</h3>{table(r['test'],{'method':'Method','pages':'Pages','clients':'Clients','mae_pp':'MAE (pp)','impression_weighted_mae_pp':'Impression-weighted MAE (pp)','client_macro_mae_pp':'Client-macro MAE (pp)'})}
+{figure('test_error','Ridge lowers page-level CTR error versus persistence on the same 10,153 held-out pages. Lower error does not establish an editing benefit.')}
+<p>Ridge reduces headline test MAE by {improvement:.2f}%. The selected-minus-persistence equal-client error difference is -0.02695 pp, with an exploratory paired client-bootstrap 95% interval of -0.05010 to -0.00821 pp. There are only six test clients, so this is not evidence of broad seasonal or population-wide reliability. Boosting has slightly lower impression-weighted error, but Ridge remains selected under the predeclared validation rule.</p>
+<p>For the directional proxy “future CTR remains below the training position-band reference,” the rule and both models each score 1.00 at K=10 and K=50, against a 0.74146 base rate. All selected top items have positive gap scores. This easy-at-the-top proxy does not distinguish which pages would benefit from edits. <strong>Independent actionability precision is unmeasured.</strong></p>
+<h3>What the models miss</h3>{figure('error_by_position','Errors vary across first-half position bands; the counts show the uneven evaluation population.')}
+<p>The largest-error examples include a CTR drop from 5.88% to 1.39% where Ridge predicts 3.79%, and jumps from roughly 0.97% and 1.17% to 2.97% and 2.90% where it predicts below 0.84%. Five historical aggregates miss abrupt changes. Query mix or changing search results are plausible explanations, not observed causes.</p>
+{figure('feature_importance','For the boosted candidate, past CTR has the largest validation permutation effect, followed by zero-click frequency and impression volume. Importance is not causal attribution.')}
+<h3>Outcome-volume sensitivity</h3>{table(r['sensitivity'],{'outcome_impression_threshold':'Minimum outcome impressions','pages':'Pages','selected_mae_pp':'Ridge MAE (pp)','persistence_mae_pp':'Persistence MAE (pp)'})}
+<p>Higher thresholds evaluate a narrower, better-measured population. These are descriptive checks, not a reason to replace the frozen primary result.</p></section>
+<section id="limits"><div class="eyebrow">05 · Limitations</div><h2>The boundary of the evidence</h2>
+<ul><li>One March window cannot establish generalization across seasons or later months. The last warehouse month was not used in development or in these results.</li><li>Coverage and impression filters select established, sufficiently measured pages. Client sizes differ, and the final test includes only six clients.</li><li>Aggregate position does not control query intent, device, country, branding or search-result layout. Reporting lag is not modeled.</li><li>No page titles, URLs, private queries or client identities are inferred. The recommendations below are numerical evidence reviews, not live-page inspections.</li><li>No intervention, independently labeled actionability or causal design is available. A positive gap is neither a guaranteed defect nor recoverable clicks.</li></ul>
+<p class="note">Operational choice: retain the transparent baseline queue. Ridge improves CTR estimation here, but the experiment does not show that a more complex review ranking yields better edits.</p></section>
+<section id="recommendations"><div class="eyebrow">06 · Ranked recommendations</div><h2>Review first. Edit only with supporting evidence.</h2>
+<p>The frozen rule compares first-half CTR with training-client position-band medians, then ranks positive gaps by <code>gap_pp / 100 × first_half_impressions</code>. It yields {r['queue_pages']:,} local candidates and one reason code, <code>BELOW_POSITION_REFERENCE</code>. Reference CTR is not monotonic across the first two position bands in this slice; that signal is explicitly marked MIXED in ML-07.</p>
+<div class="table-wrap"><table><thead><tr><th>Rank</th><th>Content pseudonym</th><th>Review action and evidence</th><th>What could make it wrong</th></tr></thead><tbody>{rows}</tbody></table></div>
+<p>A specialist should verify the underlying search intent and snippet, check authorized query/device context if available, and record a human decision before changing anything. Leave appropriate pages unchanged. Large clients can dominate volume-based scores; evaluate reviewer capacity by client before adopting the queue operationally.</p></section>
+<section id="reproduce"><div class="eyebrow">07 · Reproducibility</div><h2>From approved data to executed notebooks</h2>
+<p>Source and instructions: <a href="{repo}">project repository</a> · <a href="{repo}/blob/main/work/REPRODUCE.md">reproduction guide</a> · <a href="{repo}/blob/main/work/notebooks/capstone.ipynb">executed capstone</a>.</p>
+<p>Download the approved March partition using your own dataset access and place it at <code>data/warehouse/march_2026.parquet</code>. Install <code>work/study-requirements.txt</code>, then run:</p><pre><code>python work/execute_study_notebooks.py
+python work/build_paper.py</code></pre>
+<p>DuckDB aggregates daily rows before pandas receives a feature frame. Seed: 42. Raw data and queue CSVs remain outside Git. The public repository contains only selected pseudonymized examples, charts and aggregate receipts. No dataset or token is included in the paper.</p>
+<p><a href="{repo}/blob/main/work/notebooks/w02_ml_task_framing.ipynb">ML-03: task framing</a> · <a href="{repo}/blob/main/work/notebooks/w03_data_contract.ipynb">ML-04: data contract</a> · <a href="{repo}/blob/main/work/notebooks/w04_baseline_score.ipynb">ML-07: baseline review</a></p>
+<p>Dataset SHA-256: <code>{r['data_sha256']}</code></p>
+{table([{'Package':k,'Version':v} for k,v in r['versions'].items()])}</section>
+<section id="credit"><div class="eyebrow">08 · Acknowledgments</div><h2>Data credit</h2><p>Built on the <a href="https://flyrank.ai">FlyRank ML Internship dataset</a>. Source: <a href="https://huggingface.co/datasets/FlyRank/internship-warehouse">FlyRank/internship-warehouse</a>, pseudonymized release v20260703. The approved release is used for research and education under its non-redistribution terms.</p></section>
+</main><footer>Ahmed Raza · FlyRank Machine Learning Capstone · Observed evidence and decision support</footer></body></html>'''
+(DOCS/'index.html').write_text(page,encoding='utf8')
+(DOCS/'.nojekyll').write_text('',encoding='utf8')
+(ROOT/'work/study-requirements.txt').write_text('\n'.join(f'{p}=={v}' for p,v in r['versions'].items())+'\nnbformat==5.11.1\nnbclient==0.11.0\nipykernel==7.3.0\n',encoding='utf8')
+print('Built docs/index.html and three local chart assets')

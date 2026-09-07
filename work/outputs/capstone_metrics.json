@@ -1,0 +1,323 @@
+{
+  "study": "CTR opportunity scoring: March 2026 warehouse slice",
+  "seed": 42,
+  "data_sha256": "6ebd367f05932238df05b193f9cfb9cc7839d7856b65ef74b5a122d5fadef589",
+  "raw_rows": 9841378,
+  "feature_pages": 28862,
+  "evaluation_pages": 25772,
+  "excluded_from_evaluation": 3090,
+  "split": [
+    {
+      "partition": "train",
+      "pages": 7687,
+      "clients": 16
+    },
+    {
+      "partition": "validation",
+      "pages": 7932,
+      "clients": 5
+    },
+    {
+      "partition": "test",
+      "pages": 10153,
+      "clients": 6
+    }
+  ],
+  "selected_on_validation": "Ridge",
+  "validation": [
+    {
+      "method": "Persistence",
+      "pages": 7932,
+      "clients": 5,
+      "mae_pp": 0.1535487022529688,
+      "impression_weighted_mae_pp": 0.12446236273699723,
+      "client_macro_mae_pp": 0.18472705425500352
+    },
+    {
+      "method": "Position reference",
+      "pages": 7932,
+      "clients": 5,
+      "mae_pp": 0.2395437439622067,
+      "impression_weighted_mae_pp": 0.2306535315007221,
+      "client_macro_mae_pp": 0.27436151984589274
+    },
+    {
+      "method": "Ridge",
+      "pages": 7932,
+      "clients": 5,
+      "mae_pp": 0.1349833345111196,
+      "impression_weighted_mae_pp": 0.11239114498021258,
+      "client_macro_mae_pp": 0.1618021804833662
+    },
+    {
+      "method": "Gradient boosting",
+      "pages": 7932,
+      "clients": 5,
+      "mae_pp": 0.13564439370534456,
+      "impression_weighted_mae_pp": 0.10939482665810565,
+      "client_macro_mae_pp": 0.17857808670917144
+    }
+  ],
+  "test": [
+    {
+      "method": "Persistence",
+      "pages": 10153,
+      "clients": 6,
+      "mae_pp": 0.16751494206383144,
+      "impression_weighted_mae_pp": 0.1464355118875871,
+      "client_macro_mae_pp": 0.17514050812283447
+    },
+    {
+      "method": "Position reference",
+      "pages": 10153,
+      "clients": 6,
+      "mae_pp": 0.24106634484380457,
+      "impression_weighted_mae_pp": 0.23157062095747477,
+      "client_macro_mae_pp": 0.2491922066285842
+    },
+    {
+      "method": "Ridge",
+      "pages": 10153,
+      "clients": 6,
+      "mae_pp": 0.14101501040031578,
+      "impression_weighted_mae_pp": 0.11924803032750123,
+      "client_macro_mae_pp": 0.14818899412676995
+    },
+    {
+      "method": "Gradient boosting",
+      "pages": 10153,
+      "clients": 6,
+      "mae_pp": 0.14130475958568448,
+      "impression_weighted_mae_pp": 0.11511786004449481,
+      "client_macro_mae_pp": 0.14793269550450092
+    }
+  ],
+  "ranking_proxy": [
+    {
+      "method": "Persistence",
+      "k": 10,
+      "future_below_reference_fraction": 1.0,
+      "base_rate": 0.7414557273712203,
+      "positive_score_items": 10
+    },
+    {
+      "method": "Persistence",
+      "k": 50,
+      "future_below_reference_fraction": 1.0,
+      "base_rate": 0.7414557273712203,
+      "positive_score_items": 50
+    },
+    {
+      "method": "Ridge",
+      "k": 10,
+      "future_below_reference_fraction": 1.0,
+      "base_rate": 0.7414557273712203,
+      "positive_score_items": 10
+    },
+    {
+      "method": "Ridge",
+      "k": 50,
+      "future_below_reference_fraction": 1.0,
+      "base_rate": 0.7414557273712203,
+      "positive_score_items": 50
+    },
+    {
+      "method": "Gradient boosting",
+      "k": 10,
+      "future_below_reference_fraction": 1.0,
+      "base_rate": 0.7414557273712203,
+      "positive_score_items": 10
+    },
+    {
+      "method": "Gradient boosting",
+      "k": 50,
+      "future_below_reference_fraction": 1.0,
+      "base_rate": 0.7414557273712203,
+      "positive_score_items": 50
+    }
+  ],
+  "selected_minus_persistence_client_macro_mae_ci95_pp": [
+    -0.050101913160541404,
+    -0.0082128676338617
+  ],
+  "paired_client_macro_difference_pp": -0.026951513996064533,
+  "importance": [
+    {
+      "feature": "past_ctr",
+      "mae_increase_pp": 0.09248720625233782,
+      "std_pp": 0.0016864332779602052
+    },
+    {
+      "feature": "zero_click_fraction",
+      "mae_increase_pp": 0.008268917509138224,
+      "std_pp": 0.0007632829665026136
+    },
+    {
+      "feature": "log_impressions",
+      "mae_increase_pp": 0.006615549418017413,
+      "std_pp": 0.0005847710778341656
+    },
+    {
+      "feature": "impression_cv",
+      "mae_increase_pp": 0.0005868666933506461,
+      "std_pp": 0.00027881822136055864
+    },
+    {
+      "feature": "mean_position",
+      "mae_increase_pp": 9.88860299223071e-05,
+      "std_pp": 0.00031500279525761924
+    }
+  ],
+  "ridge_standardized_coefficients": {
+    "past_ctr": 0.27696359268784027,
+    "log_impressions": -0.01962328975615403,
+    "mean_position": 0.011712439405097821,
+    "impression_cv": 0.013615295648683327,
+    "zero_click_fraction": -0.04157425067490508
+  },
+  "errors_by_position": [
+    {
+      "position_band": "1-3",
+      "n": 2173,
+      "mae_pp": 0.1603130792610624
+    },
+    {
+      "position_band": ">3-10",
+      "n": 7291,
+      "mae_pp": 0.13429692988261363
+    },
+    {
+      "position_band": ">10-20",
+      "n": 689,
+      "mae_pp": 0.15124261768647537
+    }
+  ],
+  "largest_errors": [
+    {
+      "content_hash_id": "content_efa152da7d9e5184",
+      "past_ctr": 5.88235,
+      "future_ctr": 1.38741,
+      "prediction": 3.79323,
+      "abs_error_pp": 2.40583,
+      "mean_position": 3.43256
+    },
+    {
+      "content_hash_id": "content_4a1e4558893cfb77",
+      "past_ctr": 0.96996,
+      "future_ctr": 2.9661,
+      "prediction": 0.79805,
+      "abs_error_pp": 2.16806,
+      "mean_position": 17.43163
+    },
+    {
+      "content_hash_id": "content_6d8726c13216585f",
+      "past_ctr": 1.16505,
+      "future_ctr": 2.89855,
+      "prediction": 0.83824,
+      "abs_error_pp": 2.06031,
+      "mean_position": 1.32816
+    }
+  ],
+  "sensitivity": [
+    {
+      "outcome_impression_threshold": 500,
+      "pages": 10153,
+      "selected_mae_pp": 0.14101501040031578,
+      "persistence_mae_pp": 0.16751494206383144
+    },
+    {
+      "outcome_impression_threshold": 1000,
+      "pages": 7435,
+      "selected_mae_pp": 0.12942070791034296,
+      "persistence_mae_pp": 0.157977072481281
+    },
+    {
+      "outcome_impression_threshold": 3000,
+      "pages": 3243,
+      "selected_mae_pp": 0.11486419095922333,
+      "persistence_mae_pp": 0.14266987445571871
+    }
+  ],
+  "top10": [
+    {
+      "rank": 1,
+      "content_id": "content_7c6373141eae744a",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.059% vs reference 0.391%; 86,860 impressions; gap score 288.8.",
+      "caveat": "Large exposure can magnify a small gap; check query mix before editing."
+    },
+    {
+      "rank": 2,
+      "content_id": "content_8e1334d6356668e3",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.002% vs reference 0.391%; 58,553 impressions; gap score 228.1.",
+      "caveat": "Search-result answers may explain low CTR without a snippet defect."
+    },
+    {
+      "rank": 3,
+      "content_id": "content_65c75874a23fca87",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.027% vs reference 0.391%; 55,680 impressions; gap score 202.8.",
+      "caveat": "A broad position band does not control device and country mix."
+    },
+    {
+      "rank": 4,
+      "content_id": "content_acbcc847f8996314",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.159% vs reference 0.391%; 83,715 impressions; gap score 194.5.",
+      "caveat": "Daily average rank can hide query-level position changes."
+    },
+    {
+      "rank": 5,
+      "content_id": "content_34a70fea29d15f24",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.024% vs reference 0.284%; 73,639 impressions; gap score 191.4.",
+      "caveat": "Reference-client medians may not transfer to this content niche."
+    },
+    {
+      "rank": 6,
+      "content_id": "content_945d6ff91386c817",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.004% vs reference 0.391%; 49,314 impressions; gap score 190.9.",
+      "caveat": "Informational intent may justify low CTR."
+    },
+    {
+      "rank": 7,
+      "content_id": "content_1642f339bd6e7c8d",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.034% vs reference 0.391%; 52,378 impressions; gap score 186.9.",
+      "caveat": "A few highly exposed queries can dominate the aggregate."
+    },
+    {
+      "rank": 8,
+      "content_id": "content_f6116743b00afc2d",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.016% vs reference 0.391%; 49,619 impressions; gap score 186.1.",
+      "caveat": "A short event can dominate this 15-day window."
+    },
+    {
+      "rank": 9,
+      "content_id": "content_b99ea6861864dea5",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.202% vs reference 0.391%; 91,474 impressions; gap score 172.8.",
+      "caveat": "Changing an appropriate title can reduce performance."
+    },
+    {
+      "rank": 10,
+      "content_id": "content_36fc1ee501ec072d",
+      "action": "Review search intent and snippet",
+      "evidence": "CTR 0.024% vs reference 0.391%; 46,199 impressions; gap score 169.7.",
+      "caveat": "Measurement coverage does not guarantee comparable intent."
+    }
+  ],
+  "queue_pages": 18445,
+  "independent_actionability_labels": 0,
+  "versions": {
+    "duckdb": "1.5.5",
+    "pandas": "3.0.5",
+    "numpy": "2.4.6",
+    "scikit-learn": "1.9.0",
+    "matplotlib": "3.11.1"
+  },
+  "python": "3.11.9"
+}

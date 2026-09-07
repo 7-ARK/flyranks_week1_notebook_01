@@ -1,0 +1,12 @@
+{
+  "candidate_pages": 18445,
+  "top10_clients": 3,
+  "feature_pages": 28862,
+  "reference_pages": 8300,
+  "signal_verdicts": {
+    "position": "MIXED",
+    "volume": "CONFIRMED"
+  },
+  "score_formula": "max(position_band_reference_ctr - past_ctr, 0) / 100 * past_impressions",
+  "independent_actionability_precision_at_10": null
+}

@@ -1,0 +1,14 @@
+{
+  "rows": 9841378,
+  "features": [
+    "past_ctr",
+    "log_impressions",
+    "mean_position",
+    "impression_cv",
+    "zero_click_fraction"
+  ],
+  "feature_pages": 28862,
+  "evaluation_pages": 25772,
+  "honest_validation_mae_pp": 0.13497830569566205,
+  "invalid_leaky_mae_pp": 3.1795587378030823e-16
+}
