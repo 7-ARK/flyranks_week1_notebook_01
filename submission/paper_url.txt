@@ -1,1 +1,1 @@
-PASTE-YOUR-DEPLOYED-PAPER-URL-HERE
+https://7-ark.github.io/flyranks_week1_notebook_01/

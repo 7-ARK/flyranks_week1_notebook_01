@@ -1,3 +1,9 @@
+## CTR research capstone
+
+[Read the research paper](https://7-ark.github.io/flyranks_week1_notebook_01/) · [Executed capstone](work/notebooks/capstone.ipynb) · [Reproduce the study](work/REPRODUCE.md)
+
+The March warehouse study compares five-feature CTR models with transparent baselines on separate client groups. Required notebooks ML-03, ML-04 and ML-07 are executed under work/notebooks/. Raw warehouse data is excluded from this repository.
+
 # FlyRank ML Internship — Starter Repo
 
 **Applied Search Intelligence: Google Search Ranking & Discoverability**
